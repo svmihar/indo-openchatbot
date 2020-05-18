@@ -1,5 +1,6 @@
 data/*
-!data/preprocess.py
+!data/*.py
+secret
 runs/*
 cached/*
 output/*

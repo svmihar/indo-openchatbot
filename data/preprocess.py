@@ -10,6 +10,7 @@ from gensim.utils import to_unicode
 
 FILTERS = [strip_tags, strip_multiple_whitespaces]
 list_of_srt = [a for a in Path("./srt").rglob("*.srt")]
+breakpoint()
 
 
 def preprocess(path: Path):
@@ -30,8 +31,13 @@ def preprocess(path: Path):
 
 
 def main():
-    kumpulan_srt = [preprocess(srt) for srt in tqdm(list_of_srt)]
-    kumpulan_srt = [srt for srt in tqdm(kumpulan_srt) if srt] #memastikan gak ada yang kosong
+    kumpulan_srt = [
+        {"title": str(srt).split("/")[-1], "conv": preprocess(srt)}
+        for srt in tqdm(list_of_srt)
+    ]
+    kumpulan_srt = [
+        srt for srt in tqdm(kumpulan_srt) if srt
+    ]  # memastikan gak ada yang kosong
     joblib.dump(kumpulan_srt, "conv_preprocessed.pkl")
 
 

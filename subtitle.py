@@ -10,25 +10,19 @@ from gensim.utils import simple_preprocess
 import pandas as pd
 import requests
 
-
-def get_download_link(url):
-    req = requests.get(url)
-    soup = BeautifulSoup(req.content, 'lxml')
-    raw_div = soup.find('div', {'class': 'btn-download'})
-    download_link = raw_div.a['href']
-    r_download = requests.get(download_link, stream=True)
-    z = zipfile.ZipFile(StringIO(r_download.content))
-    z.extractall('./')
-    return download_link
+# TODO: bikin supaya txt biasa bisa jadi formatted dataset
+# TODO: apache_arrow + beam buat preprocess csv dialog format
 
 
-def get_page(page, url='https://subs.dog/subtitles/id/Movies/uploaded_at:desc/'):
-    r = requests.get(url+str(page))
-    soup = BeautifulSoup(r.content, 'lxml')
-    titles = soup.find_all('td', {'class': 'releases'})
+def get_page(page, url="https://subs.dog/subtitles/id/Movies/uploaded_at:desc/"):
+    r = requests.get(url + str(page))
+    soup = BeautifulSoup(r.content, "lxml")
+    titles = soup.find_all("td", {"class": "releases"})
     titles_raw = [simple_preprocess(a.text) for a in titles]
-    hasil = [{'titles': ' '.join(title_raw), 'link': 'https://subs.dog'+title.a['href']}
-             for title_raw, title in zip(titles_raw, titles)]
+    hasil = [
+        {"titles": " ".join(title_raw), "link": "https://subs.dog" + title.a["href"]}
+        for title_raw, title in zip(titles_raw, titles)
+    ]
     return pd.DataFrame(hasil)
 
 
@@ -42,20 +36,23 @@ class scraper:
     chrome_options.add_argument("--disable-popup-blocking")
     chrome_options.add_argument("--start-maximized")
     # chrome_options.add_argument("--headless")
-    driver = Chrome(executable_path='../../chromedriver',
-                    options=chrome_options)
+    driver = Chrome(executable_path="../../chromedriver", options=chrome_options)
     csv: str
 
     def __post_init__(self):
         self.contoh_df = pd.read_csv(self.csv)  # ['link'].values
-        self.hasil = [self.contoh_df['link'][i] for i, title in enumerate(self.contoh_df.titles)
-                      if 'yts' in title or 'yify' in title]
+        self.hasil = [
+            self.contoh_df["link"][i]
+            for i, title in enumerate(self.contoh_df.titles)
+            if "yts" in title or "yify" in title
+        ]
 
     def set_url(self, link):
         self.url = link
         self.driver.get(self.url)
         self.driver.find_element_by_xpath(
-            '//*[@id="subtitle-info"]/div/div[2]/a/i').click()
+            '//*[@id="subtitle-info"]/div/div[2]/a/i'
+        ).click()
 
     def run(self):
         for link in tqdm(self.hasil):
@@ -69,7 +66,7 @@ class scraper:
 
 
 if __name__ == "__main__":
-    c = scraper('./data/gabungan.csv')
+    c = scraper("./data/gabungan.csv")
     c.run()
     # for i in tqdm(page_range):
     #     page = get_page(page=i)
