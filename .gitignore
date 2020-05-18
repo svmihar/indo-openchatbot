@@ -1,7 +1,7 @@
 data/*
 !data/*.py
 secret
-ipynb_checkpoints/*
+.ipynb_checkpoints/*
 runs/*
 cached/*
 output/*
