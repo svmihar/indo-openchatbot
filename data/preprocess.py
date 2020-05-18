@@ -9,26 +9,31 @@ from gensim.parsing.preprocessing import (
 from gensim.utils import to_unicode
 
 FILTERS = [strip_tags, strip_multiple_whitespaces]
-srt_dir = Path("./srt").rglob("*.srt")
-kumpulan_srt = []
+list_of_srt = [a for a in Path("./srt").rglob("*.srt")]
 
-for srt in tqdm(srt_dir):
+
+def preprocess(path: Path):
+    clean = []
     try:
-        raw = open(srt, encoding="utf-8-sig").read().splitlines()
+        raw = open(path, encoding="utf-8-sig").read().splitlines()
         raw = [to_unicode(sub) for sub in raw if sub]  # removes empty line
         raw = [sub for sub in raw if not sub.isdigit()]  # removes line numbering
         raw = [sub for sub in raw if "-->" not in sub]  # removes timestamps
-        clean = []
         for sub in raw:
             if "Lebah" in sub or "http" in sub:
                 continue
-            clean.append(sub)
-        clean = [preprocess_string(r, FILTERS) for r in clean]  # tokenizing
-        raw = [" ".join(r) for r in raw if r]
-    except Exception as e:
-        print(srt, e)
-        continue
+            clean.append(preprocess_string(sub, FILTERS))
+    except Exception:
+        pass
 
-    kumpulan_srt.append({"title": str(srt), "conv": raw})
+    return [" ".join(r) for r in clean if r]
 
-joblib.dump(kumpulan_srt, "conv_preprocessed.pkl")
+
+def main():
+    kumpulan_srt = [preprocess(srt) for srt in tqdm(list_of_srt)]
+    kumpulan_srt = [srt for srt in tqdm(kumpulan_srt) if srt] #memastikan gak ada yang kosong
+    joblib.dump(kumpulan_srt, "conv_preprocessed.pkl")
+
+
+if __name__ == "__main__":
+    main()
