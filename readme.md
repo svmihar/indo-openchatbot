@@ -15,4 +15,5 @@ diambil dari [sini](http://opus.nlpl.eu/OpenSubtitles-v2018.php) dulu
     - tiap response harus ada context -> ini gimana cara misahin context nya pake ./conversational-datasets/open-subtitles
     - kenapa kenapa banyak af ini dependency nya hanya untuk extract response
 
-
+# hasil 
+pertama kali running dia jawabannya sama terus, mesti di ganti kayanya datasetnya rada bego soalnya
