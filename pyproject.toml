@@ -7,7 +7,7 @@ authors = ["svmihar <svmihar@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "^2.23.0"
-lxml = "^4.5.0"
+lxml = "^4.6.5"
 bs4 = "^0.0.1"
 pandas = "^1.0.3"
 gensim = "^3.8.3"
